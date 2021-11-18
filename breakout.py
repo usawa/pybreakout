@@ -64,6 +64,17 @@ class Brique(pygame.sprite.Sprite):
     def __init__(self, color, x, y):
         pygame.sprite.Sprite.__init__(self)
 
+        self.image = pygame.Surface((64,24), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, color, pygame.Rect(0, 0, 64, 24))
+        pygame.draw.rect(self.image, (0,0,0), pygame.Rect(0, 0, 64, 24),1)
+
+
+        #self.image = pygame.image.load("intro_ball.gif")
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
     def update(self):
         self.rect = self.rect.move(self.speed)
 
@@ -140,8 +151,27 @@ def main():
 
     all_sprites = pygame.sprite.Group()
 
+    all_bricks = pygame.sprite.Group()
+    brick_list = []
+
+    colors = []
+    colors.append((255,  0,  0)) # Rouge
+    colors.append((255,165,  0)) # Orange
+    colors.append((255,255,  0)) # Jaune
+    colors.append((  0,255,  0)) # Vert
+    colors.append((  0,  0,255)) # Bleu
+    colors.append((255,  0,255)) # Violet
+    
+
+    for line in range(0,6):
+        for col in range(0,9):
+            brick_list.append( Brique ( colors[line-1], col*64+32 , line*24+32))
+    
+    all_bricks.add(brick_list)
+
+
     ball_list = [] 
-    for nb in range(1,50):
+    for nb in range(1,2):
        ball_list.append( balle(  (random.randint(0,255), random.randint(0,255) ,random.randint(0,255) ) , random.randint(0,640),random.randint(0,480)) )
 
     all_sprites.add(ball_list)
@@ -158,7 +188,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
 
-        if(len(all_sprites) <= 0):
+        if(len(all_sprites) <= 1):
             break
 
         collide_list = pygame.sprite.spritecollide(raquette, ball_list, False)
@@ -173,6 +203,7 @@ def main():
         # Update
         all_sprites.update()
 
+        all_bricks.draw(screen)
         all_sprites.draw(screen)
 
         pygame.display.flip()
